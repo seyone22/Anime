@@ -1,7 +1,9 @@
 package com.seyone22.anime.presentation.screen
 
+import UserPreferences
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import com.seyone22.anime.data.GraphQLRequest
 import com.seyone22.anime.data.api.GraphQLApi
@@ -9,6 +11,8 @@ import com.seyone22.anime.data.api.response.MediaList
 import com.seyone22.anime.data.api.response.ResponseData
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
@@ -18,7 +22,9 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 
-class ScheduleViewModel : ViewModel() {
+class ScheduleViewModel(
+    private val userPreferences: UserPreferences
+) : ViewModel() {
     private val json = Json { ignoreUnknownKeys = true; coerceInputValues = true }
 
     val logging = HttpLoggingInterceptor().apply {
@@ -41,46 +47,64 @@ class ScheduleViewModel : ViewModel() {
     private val _mediaList = MutableStateFlow<List<MediaList>>(emptyList())
     val mediaList = _mediaList.asStateFlow()
 
-    // First, fetch the list of media IDs
+
+    // Function to fetch the list of media based on the stored user ID
     fun fetchWatchingMedia() {
-        val query = """
-            query (${"$"}page: Int) {
-              Page (page: ${"$"}page, perPage: 50) {
-                mediaList(userId: 148802, status: CURRENT, type: ANIME, sort: UPDATED_TIME_DESC) {
-                    mediaId
-                    progress
-                    media {
-                        title {
-                            romaji
-                        }
-                        episodes
-                        bannerImage
-                        nextAiringEpisode {
-                            episode
-                            timeUntilAiring
-                        }
-                    }
-                }
-              }
-            }
-        """.trimIndent()
+        viewModelScope.launch {
+            try {
+                // Get the user ID from DataStore
+                val userId = userPreferences.userName.first()
 
-        val variables = mapOf("page" to 1)
-        val request = GraphQLRequest(query, variables)
+                if (!userId.isNullOrEmpty()) {
+                    // Proceed to fetch media using the retrieved user ID
+                    val query = """
+                        query (${"$"}page: Int) {
+                          Page (page: ${"$"}page, perPage: 50) {
+                            mediaList(userId: $userId, status: CURRENT, type: ANIME, sort: UPDATED_TIME_DESC) {
+                                mediaId
+                                progress
+                                media {
+                                    title {
+                                        romaji
+                                    }
+                                    episodes
+                                    bannerImage
+                                    nextAiringEpisode {
+                                        episode
+                                        timeUntilAiring
+                                    }
+                                }
+                            }
+                          }
+                        }
+                    """.trimIndent()
 
-        api.getMediaIds(request).enqueue(object : Callback<ResponseData> {
-            override fun onResponse(call: Call<ResponseData>, response: Response<ResponseData>) {
-                if (response.isSuccessful) {
-                    val mediaIds = response.body()?.data?.Page?.mediaList ?: emptyList()
-                    _mediaList.value = mediaIds
+                    val variables = mapOf("page" to 1)
+                    val request = GraphQLRequest(query, variables)
+
+                    api.getMediaIds(request).enqueue(object : Callback<ResponseData> {
+                        override fun onResponse(
+                            call: Call<ResponseData>,
+                            response: Response<ResponseData>
+                        ) {
+                            if (response.isSuccessful) {
+                                val mediaIds = response.body()?.data?.Page?.mediaList ?: emptyList()
+                                _mediaList.value = mediaIds
+                            } else {
+                                Log.e("ScheduleViewModel", "Error fetching media: ${response.errorBody()?.string()}")
+                            }
+                        }
+
+                        override fun onFailure(call: Call<ResponseData>, t: Throwable) {
+                            Log.e("ScheduleViewModel", "Error fetching media: $t")
+                        }
+                    })
                 } else {
-                    Log.e("ScheduleViewModel", "Error fetching media IDs: ${Exception(response.errorBody()?.string())}")
+                    Log.e("ScheduleViewModel", "User ID is null or empty")
                 }
+            } catch (e: Exception) {
+                Log.e("ScheduleViewModel", "Error fetching user ID: $e")
             }
-
-            override fun onFailure(call: Call<ResponseData>, t: Throwable) {
-                Log.e("ScheduleViewModel", "Error fetching media IDs: $t")
-            }
-        })
+        }
     }
 }

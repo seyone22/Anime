@@ -22,9 +22,6 @@ import com.google.android.horologist.tiles.SuspendingTileService
 
 private const val RESOURCES_VERSION = "0"
 
-/**
- * Skeleton for a tile with no images.
- */
 @OptIn(ExperimentalHorologistApi::class)
 class MainTileService : SuspendingTileService() {
 
@@ -49,7 +46,7 @@ class MainTileService : SuspendingTileService() {
 }
 
 private fun tileLayout(context: Context): LayoutElementBuilders.LayoutElement {
-    return PrimaryLayout.Builder(buildDeviceParameters(context.resources))
+    return PrimaryLayout.Builder(buildDeviceParameters(context.resources)).setResponsiveContentInsetEnabled(true)
         .setContent(
             Text.Builder(context, "Hello World!")
                 .setColor(argb(Colors.DEFAULT.onSurface))

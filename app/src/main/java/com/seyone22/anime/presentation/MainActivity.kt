@@ -26,8 +26,10 @@ class MainActivity : ComponentActivity() {
             ViewModelProvider.AndroidViewModelFactory.getInstance(application)
         )[MainViewModel::class.java]
 
+        mainViewModel.fetchWatchingMedia()
+
         setContent {
-            WearApp(mainViewModel)
+            WearApp(mainViewModel, this)
         }
     }
 }

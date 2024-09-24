@@ -62,6 +62,9 @@ dependencies {
     // Kotlinx Serialization JSON
     implementation(libs.kotlinx.serialization.json)
 
+    // AndroidX Compose Material Icons Extended
+    implementation(libs.androidx.material.icons.extended)
+
     implementation(libs.coil.compose)
 
     implementation(libs.work.runtime.ktx)
@@ -85,4 +88,8 @@ dependencies {
     androidTestImplementation(libs.ui.test.junit4)
     debugImplementation(libs.ui.tooling)
     debugImplementation(libs.ui.test.manifest)
+
+    implementation(libs.androidx.datastore.preferences)
+
+    implementation(libs.androidx.wear.input)
 }

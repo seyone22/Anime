@@ -103,7 +103,7 @@ class MainViewModel(
             mediaItems.forEach { item ->
                 item.media?.nextAiringEpisode?.let { airingEpisode ->
                     val timeUntilAiring = airingEpisode.timeUntilAiring
-                    if (timeUntilAiring <= 60 * 60 * 48) { // 2 days or less
+                    if (timeUntilAiring <= 60 * 60 * 24) { // 1 day or less
                         val animeTitle = item.media.title.romaji
                         withContext(Dispatchers.Main) {
                             notificationHelper.sendNotification(animeTitle, timeUntilAiring / 60) // Send notification in minutes

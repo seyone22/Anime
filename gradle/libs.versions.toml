@@ -1,6 +1,7 @@
 [versions]
 agp = "8.5.2"
 coilCompose = "2.7.0"
+datastorePreferences = "1.1.1"
 kotlin = "1.9.22"
 playServicesWearable = "18.2.0"
 composeBom = "2024.09.02"
@@ -13,6 +14,7 @@ tilesMaterial = "1.4.0"
 horologistComposeTools = "0.4.8"
 horologistTiles = "0.4.8"
 watchfaceComplicationsDataSourceKtx = "1.2.1"
+materialIconsExtended = "1.7.2"
 
 # DO NOT CHANGE THIS VERSION CYKA BLYAT
 kotlinxSerializationJson = "1.6.3"
@@ -23,9 +25,12 @@ okhttp = "4.12.0"
 okhttpLoggingInterceptor = "4.12.0"
 composeMaterial3 = "1.0.0-alpha25"
 composeNavigation = "1.4.0"
+wearInput = "1.2.0-alpha02"
 workRuntimeKtx = "2.9.1"
 
 [libraries]
+androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
+androidx-wear-input = { module = "androidx.wear:wear-input", version.ref = "wearInput" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
 play-services-wearable = { group = "com.google.android.gms", name = "play-services-wearable", version.ref = "playServicesWearable" }
 compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
@@ -43,6 +48,7 @@ tiles-material = { group = "androidx.wear.tiles", name = "tiles-material", versi
 horologist-compose-tools = { group = "com.google.android.horologist", name = "horologist-compose-tools", version.ref = "horologistComposeTools" }
 horologist-tiles = { group = "com.google.android.horologist", name = "horologist-tiles", version.ref = "horologistTiles" }
 watchface-complications-data-source-ktx = { group = "androidx.wear.watchface", name = "watchface-complications-data-source-ktx", version.ref = "watchfaceComplicationsDataSourceKtx" }
+androidx-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended", version.ref = "materialIconsExtended" }
 
 retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
 retrofit-kotlinx-serialization-converter = { group = "com.jakewharton.retrofit", name = "retrofit2-kotlinx-serialization-converter", version.ref = "kotlinxSerializationConverter" }
